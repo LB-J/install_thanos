@@ -1,0 +1,6 @@
+# 镜像版本
+prometheus: bitnami/prometheus:2.43.0
+thanos: thanosio/thanos:v0.31.0
+alertmanager: bitnami/alertmanager:0.25.0
+grafana: grafana/grafana:9.2.3
+

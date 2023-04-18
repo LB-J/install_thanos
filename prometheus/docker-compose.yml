@@ -1,0 +1,51 @@
+version: '2.3'
+services:
+  prometheus:
+    image: bitnami/prometheus:2.43.0
+    container_name: prometheus
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    privileged: true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./data/prometheus/conf/:/etc/prometheus/
+      - ./data/prometheus/conf.d:/conf.d/
+      - ./data/prometheus/data:/prometheus/
+    ports:
+      - 9090:9090
+    networks:
+      - prometheus
+    command: --web.enable-lifecycle --storage.tsdb.no-lockfile --storage.tsdb.path=/prometheus --config.file=/etc/prometheus/prometheus.yml  --log.level=warn --web.enable-admin-api --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles
+
+  sidercar:
+    image: thanosio/thanos:v0.31.0
+    container_name: thanos-sidercar
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    privileged: true
+    volumes:
+      - /etc/hosts:/etc/hosts:ro
+      - ./data/prometheus/data:/var/prometheus
+    links:
+      - prometheus:prometheusdb
+    ports:
+      - 19191:19191
+      - 19090:19090
+    networks:
+      - prometheus
+    command: sidecar  --tsdb.path /var/prometheus --http-address  0.0.0.0:19191 --grpc-address 0.0.0.0:19090 --prometheus.url   "http://prometheusdb:9090"
+
+networks:
+  prometheus:
+    external: false
+

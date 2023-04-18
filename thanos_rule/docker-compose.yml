@@ -1,0 +1,29 @@
+version: '2.3'
+services:
+  thanos-rule:
+    image: thanosio/thanos:v0.31.0
+    container_name: thanos-rule
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    privileged: true
+    volumes:
+      - /etc/hosts:/etc/hosts:ro
+      - ./data/thanos-rule/data:/data
+      - ./data/thanos-rule/rules:/rules
+      - ./data/thanos-rule/conf:/conf
+    networks:
+      - thanos
+    ports:
+      - 19193:19193
+      - 10905:10905
+    command: rule --http-address=0.0.0.0:19193   --grpc-address="0.0.0.0:10905" --alert.query-url "http://192.168.0.26:19192"  --data-dir  "/data" --eval-interval  "30s"  --rule-file  "/rules/*.yml" --query.sd-files="/conf/query.yml" --alertmanagers.url 'http://alertmanager:9093'
+
+networks:
+  thanos:
+    external: false
+

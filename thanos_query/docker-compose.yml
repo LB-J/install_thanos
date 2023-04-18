@@ -1,0 +1,27 @@
+version: '2.3'
+services:
+  thanos-query:
+    image: thanosio/thanos:v0.31.0
+    container_name: thanos-query
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    privileged: true
+    volumes:
+      - /etc/hosts:/etc/hosts:ro
+      - ./data/thanos-query/conf:/conf
+    ports:
+      - "19192:19192"
+      - "19092:19092"
+    networks:
+      - thanos
+    command: query --log.level=warn --query.replica-label "replica" --store.sd-files=/conf/query.yml  --http-address=0.0.0.0:19192 --grpc-address=0.0.0.0:19092
+
+networks:
+  thanos:
+    external: false
+

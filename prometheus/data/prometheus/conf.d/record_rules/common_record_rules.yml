@@ -1,0 +1,10 @@
+groups:
+   - name: cpu
+     rules:
+      - record: cpu5musedrate
+        expr: sum(irate(node_cpu_seconds_total[5m])) by (instance,mode,cluster,hostname) 
+      - record: cpucores
+        expr: count(count(node_schedstat_timeslices_total) by (instance,cpu,cluster,hostname)) by (instance,cluster,hostname)
+      - record: windows_cpucores
+        expr: count(count(windows_cpu_core_frequency_mhz) by (instance,core,cluster,ip_address)) by (instance,cluster,ip_address)
+

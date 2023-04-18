@@ -1,0 +1,32 @@
+groups:
+- name: 硬件监控
+  rules:
+  - alert: 系统 file describe 使用超过5w
+    annotations:
+      description: '{{ $labels.ip_address }} 节点 fd 用量超过5w。当前值为{{ $value }}'
+    expr: !!python/unicode 'node_filefd_allocated > 50000'
+    for: 5m
+    labels:
+      alert_host: '{{ $labels.instance }}'
+      rule_id: 39
+      severity: WARNING
+  - alert: / 磁盘空间小于50G
+    annotations:
+      description: '{{ $labels.instance }} {{ $labels.ip_address }} 根磁盘空间小于5G'
+    expr: !!python/unicode 'sum(node_filesystem_avail_bytes{mountpoint =  "/"}) by
+      (hostname, mountpoint,instance) < 50000000000'
+    for: 5m
+    labels:
+      alert_host: '{{ $labels.instance }}'
+      rule_id: 17
+      severity: CRITICAL
+  - alert: /export 磁盘空间小于50G
+    annotations:
+      description: '{{ $labels.instance }}  {{ $labels.ip_address }} 磁盘空间小于50G'
+    expr: !!python/unicode 'sum(node_filesystem_avail_bytes{mountpoint =  "/export"})
+      by (hostname,instance, mountpoint,ip_address) < 50000000000'
+    for: 5m
+    labels:
+      alert_host: '{{ $labels.instance }}'
+      rule_id: 16
+      severity: CRITICAL

@@ -1,0 +1,27 @@
+version: '2.3'
+services:
+  alertmanager:
+    image: bitnami/alertmanager:0.25.0
+    container_name: alertmanager
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    privileged: true
+    volumes:
+      - /etc/hosts:/etc/hosts:ro
+      - ./data/alertmanager/conf:/etc/alertmanager/ 
+      - ./data/alertmanager/data:/alertmanager
+    networks:
+      - thanos
+    ports:
+      - 9093:9093
+    command: --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/alertmanager
+
+networks:
+  thanos:
+    external: false
+

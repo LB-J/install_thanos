@@ -1,0 +1,26 @@
+version: '2.3'
+services:
+  grafana:
+    image: grafana/grafana:9.2.3
+    container_name: grafana
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    privileged: true
+    volumes:
+      - /etc/hosts:/etc/hosts:ro
+      - ./data/grafana/conf:/etc/grafana
+      - ./data/grafana/data:/var/lib/grafana
+    ports:
+      - 3000:3000
+    networks:
+      - grafana
+
+networks:
+  grafana:
+    external: false
+
