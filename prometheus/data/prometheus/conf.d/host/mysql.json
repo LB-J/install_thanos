@@ -1,0 +1,16 @@
+[
+         {
+        "labels": {
+            "db_application": "application",
+            "type": "mysql_exporter",
+            "db_type": "slave",
+            "server": "mysql",
+            "cluster": "product",
+            "port": "3307",
+            "ip_address": "192.168.10.4"
+        },
+        "targets": [
+            "192.168.10.4:9105"
+        ]
+    }
+]

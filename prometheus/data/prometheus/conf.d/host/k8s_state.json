@@ -1,0 +1,13 @@
+[
+    {
+        "labels": {
+            "cluster": "product",
+            "hostname": "k8s-master-0-1",
+            "ip_address": "192.168.0.1",
+            "type": "k8s"
+        },
+        "targets": [
+            "k8s-monitor.prod.test.com"
+        ]
+    }
+]

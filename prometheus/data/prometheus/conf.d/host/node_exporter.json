@@ -1,0 +1,14 @@
+[
+      {
+        "labels": {
+            "cluster": "product",
+            "hostname": "ops-test-0-1",
+            "ip_address": "192.168.0.1",
+            "group": "ops-jq",
+            "type": "node_exporter"
+        },
+        "targets": [
+            "192.168.0.1:9100"
+        ]
+    }
+]
