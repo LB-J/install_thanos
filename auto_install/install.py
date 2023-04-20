@@ -2,6 +2,14 @@ import sys
 import subprocess
 from ruamel import yaml
 import os
+import socket
+
+
+# 获取当前节点IP
+def get_host_ip():
+    hostname = socket.gethostname()
+    ip = socket.gethostbyname(hostname)
+    return ip
 
 
 def parse_config(config_file):
@@ -35,39 +43,34 @@ def docker_run(start_dir):
     subprocess.run(command, timeout=600, shell=True)
 
 
-def grafana():
-    run_dir = "../grafana/"
-    docker_run(run_dir)
+def grafana(config):
+    # run_dir = "../grafana/"
+    # docker_run(run_dir)
+    pass
 
 
 def alert_manager(config):
     template_file = "../alertmanager/data/alertmanager/conf/alertmanager-template.yml"
     config_file = "../alertmanager/data/alertmanager/conf/alertmanager.yml"
-    run_dir = "../alertmanager/"
     conf = load_yaml(template_file)
     conf["receivers"][0]["webhook_configs"][0]["url"] = config["monitor"]["alert_manager"]["web_hook"][0]['url']
     dump_yaml(config_file, conf)
-    docker_run(run_dir)
 
 
 def prometheus(config):
     template_file = "../prometheus/data/prometheus/conf/prometheus-template.yml"
     config_file = "../prometheus/data/prometheus/conf/prometheus.yml"
-    run_dir = "../prometheus"
     conf = load_yaml(template_file)
     conf["global"]["external_labels"] = config["monitor"]["prometheus"]["external_labels"]
     dump_yaml(config_file, conf)
-    docker_run(run_dir)
 
 
 def thanos_query(config):
     template_file = "../thanos_query/data/thanos-query/conf/query-template.yml"
     config_file = "../thanos_query/data/thanos-query/conf/query.yml"
-    run_dir = "../thanos_query"
     conf = load_yaml(template_file)
     conf[0]["targets"] = config['monitor']['prometheus']['hosts']
     dump_yaml(config_file, conf)
-    docker_run(run_dir)
 
 
 def thanos_rule(config):
@@ -75,19 +78,49 @@ def thanos_rule(config):
     query_config_file = "../thanos_rule/data/thanos-rule/conf/query.yml"
     alert_template_file = "../thanos_rule/data/thanos-rule/conf/alertmanager-template.yml"
     alert_config_file = "../thanos_rule/data/thanos-rule/conf/alertmanager.yml"
-    run_dir = "../thanos_rule"
     query_conf = load_yaml(query_template_file)
     query_conf[0]["targets"] = config['monitor']['thanos_query']['hosts']
     dump_yaml(query_config_file, query_conf)
     alert_conf = load_yaml(alert_template_file)
     alert_conf["alertmanagers"][0]["static_configs"] = config['monitor']['alert_manager']['hosts']
     dump_yaml(alert_config_file, alert_conf)
-    docker_run(run_dir)
+
+
+def generate_config(conf, serve_list):
+    for server_name in serve_list:
+        eval(server_name)(conf)
+
+
+def start_server(server_list):
+    for serve_name in server_list:
+        work_dir = "../%s" % serve_name
+        docker_run(work_dir)
 
 
 if __name__ == "__main__":
     host_config = parse_config(config_file=os.path.join(os.path.dirname(__file__), 'hosts.yml'))
-    prometheus(host_config)
-    thanos_query(host_config)
-    thanos_rule(host_config)
-    alert_manager(host_config)
+    # 当前仅支持单IP服务器，通过判断配置节点IP是否为当前节点，进行启动对应服务
+    local_ip = get_host_ip()
+    install_list = []
+    query_hosts = [i.split(":")[0] for i in host_config["monitor"]["thanos_query"]["hosts"]]
+    rule_hosts = host_config["monitor"]["thanos_rule"]["hosts"]
+    prometheus_hosts = [i.split(":")[0] for i in host_config["monitor"]["prometheus"]["hosts"]]
+    alert_hosts = [i.split(":")[0] for i in host_config["monitor"]["alert_manager"]["hosts"]]
+    grafana_hosts = host_config["monitor"]["grafana"]["hosts"]
+    if local_ip in query_hosts:
+        install_list.append("thanos_query")
+    if local_ip in rule_hosts:
+        install_list.append("thanos_rule")
+    if local_ip in prometheus_hosts:
+        install_list.append("prometheus")
+    if local_ip in alert_hosts:
+        install_list.append("alert_manager")
+    if local_ip in grafana_hosts:
+        install_list.append("grafana")
+    # 生成配置文件：
+    generate_config(conf=host_config, serve_list=install_list)
+    start_server(server_list=install_list)
+
+
+
+
