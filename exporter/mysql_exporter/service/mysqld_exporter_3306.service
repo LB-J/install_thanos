@@ -1,0 +1,16 @@
+[Unit]
+Description=mysqld_exporter_3306
+After=network.target
+[Service]
+#Type=forking
+Environment="DATA_SOURCE_NAME=monitor:monitor@(127.0.0.1:3306)/"
+PIDFile=/var/run/mysqld_exporter_3306.pid
+User=prometheus
+ExecStart=/var/opt/mysqld_exporter/mysqld_exporter --web.listen-address=0.0.0.0:9400
+#KillSignal=SIGQUIT
+TimeoutStopSec=5
+#ExecStop=/usr/bin/pkill node_exporter 
+#PrivateTmp=true
+Restart=always
+[Install]
+WantedBy=multi-user.target

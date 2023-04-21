@@ -1,0 +1,11 @@
+---
+hostPort: jmx_host:jmx_port
+lowercaseOutputLabelNames: true
+lowercaseOutputName: false
+whitelistObjectNames:
+  - 'Hadoop:service=NameNode,name=*'
+  - 'java.lang:type=ClassLoading'
+  - 'java.lang:type=Compilation'
+  - 'java.lang:type=GarbageCollector,name=*'
+  - 'java.lang:type=Memory'
+  - 'java.lang:type=MemoryPool*'

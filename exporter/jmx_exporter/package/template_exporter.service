@@ -1,0 +1,15 @@
+[Unit]
+Description=kafka jmx monitor
+After=network.target
+[Service]
+#Type=forking
+PIDFile=/var/run/kafka_jmx.pid
+User=prometheus
+ExecStart=java  -Xms1g -Xmx1g  -jar /var/opt/monitor/jmx/bin/jmx_prometheus_httpserver.jar 10023 /var/opt/monitor/jmx/config/kafka.yml
+#KillSignal=SIGQUIT
+TimeoutStopSec=5
+#ExecStop=/usr/bin/pkill node_exporter 
+#PrivateTmp=true
+Restart=always
+[Install]
+WantedBy=multi-user.target

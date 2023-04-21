@@ -1,6 +1,6 @@
 global:
   external_labels:
-    replica: 127.0.0.1.1
+    replica: 127.0.0.1
     monitor: base
   scrape_interval: 60s
   evaluation_interval: 60s

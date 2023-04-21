@@ -1,0 +1,4 @@
+# mysql exporter 采用开源的 mysqld_exporter， git地址如下：
+https://github.com/prometheus/mysqld_exporter
+# package 目录存放的为0.13.0 版本，获取最新版本可使用如上地址进行下载。
+# service 目录存在的为 通过systemctl 守护的配置，可根据实际情况进行配置填写。

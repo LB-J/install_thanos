@@ -1,0 +1,8 @@
+---
+hostPort: jmx_host:jmx_port
+lowercaseOutputLabelNames: true
+lowercaseOutputName: false
+whitelistObjectNames:
+  - 'Hadoop:service=ResourceManager,name=QueueMetrics,*'
+  - 'Hadoop:service=ResourceManager,name=*'
+  - 'java.lang:type=*'
