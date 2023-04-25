@@ -1,0 +1,25 @@
+version: '2.3'
+services:
+  blackbox:
+    image: bitnami/blackbox-exporter:0.23.0
+    container_name: blackbox
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    privileged: true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/:/config
+    ports:
+      - "9115:9115"
+    networks:
+      - prometheus
+    command: --config.file=/config/blackbox.yml
+
+networks:
+  prometheus:
+    external: false

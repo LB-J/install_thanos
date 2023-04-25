@@ -39,8 +39,8 @@ services:
     links:
       - prometheus:prometheusdb
     ports:
-      - 19191:19191
-      - 19090:19090
+      - "19191:19191"
+      - "19090:19090"
     networks:
       - prometheus
     command: sidecar  --tsdb.path /var/prometheus --http-address  0.0.0.0:19191 --grpc-address 0.0.0.0:19090 --prometheus.url   "http://prometheusdb:9090"
