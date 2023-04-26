@@ -48,7 +48,7 @@ def grafana(config):
     pass
 
 
-def alert_manager(config):
+def alertmanager(config):
     template_file = "../alertmanager/data/alertmanager/conf/alertmanager-template.yml"
     config_file = "../alertmanager/data/alertmanager/conf/alertmanager.yml"
     conf = load_yaml(template_file)
