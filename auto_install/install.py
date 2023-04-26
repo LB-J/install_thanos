@@ -5,12 +5,11 @@ import os
 import socket
 
 
-# 获取当前节点IP
+# 获取当前节点IP，暂时无用
 def get_host_ip():
-    hostname = socket.gethostname()
-    ip = socket.gethostbyname(hostname)
-    return ip
-
+    get_ip_command = "hostname -I | grep -P '(\d+\.){3}\d+'"
+    res = subprocess.run(get_ip_command, timeout=30, shell=True,stdout=subprocess.PIPE).stdout
+    return res.rstrip().split()
 
 def parse_config(config_file):
     with open(config_file, 'r') as file:
@@ -99,17 +98,17 @@ def start_server(server_list):
 
 if __name__ == "__main__":
     host_config = parse_config(config_file=os.path.join(os.path.dirname(__file__), 'hosts.yml'))
-    # 当前仅支持单IP服务器，通过判断配置节点IP是否为当前节点，进行启动对应服务
-    local_ip = get_host_ip()
+    # 当前本机 IP 地址通过hosts.yml 文件进行配置
+    local_ip = host_config["monitor"]["localhost"]["ip"]
     install_list = []
     query_hosts = [i.split(":")[0] for i in host_config["monitor"]["thanos_query"]["hosts"]]
     rule_hosts = host_config["monitor"]["thanos_rule"]["hosts"]
     prometheus_hosts = [i.split(":")[0] for i in host_config["monitor"]["prometheus"]["hosts"]]
     alert_hosts = [i.split(":")[0] for i in host_config["monitor"]["alert_manager"]["hosts"]]
     grafana_hosts = host_config["monitor"]["grafana"]["hosts"]
-    if local_ip in query_hosts:
+    if query_hosts in local_ip:
         install_list.append("thanos_query")
-    if local_ip in rule_hosts:
+    if rule_hosts in local_ip:
         install_list.append("thanos_rule")
     if local_ip in prometheus_hosts:
         install_list.append("prometheus")
@@ -119,6 +118,7 @@ if __name__ == "__main__":
         install_list.append("grafana")
     # 生成配置文件：
     generate_config(conf=host_config, serve_list=install_list)
+    # 启动服务
     start_server(server_list=install_list)
 
 
