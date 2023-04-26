@@ -104,7 +104,7 @@ if __name__ == "__main__":
     query_hosts = [i.split(":")[0] for i in host_config["monitor"]["thanos_query"]["hosts"]]
     rule_hosts = host_config["monitor"]["thanos_rule"]["hosts"]
     prometheus_hosts = [i.split(":")[0] for i in host_config["monitor"]["prometheus"]["hosts"]]
-    alert_hosts = [i.split(":")[0] for i in host_config["monitor"]["alert_manager"]["hosts"]]
+    alert_hosts = [i.split(":")[0] for i in host_config["monitor"]["alertmanager"]["hosts"]]
     grafana_hosts = host_config["monitor"]["grafana"]["hosts"]
     if query_hosts in local_ip:
         install_list.append("thanos_query")
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     if local_ip in prometheus_hosts:
         install_list.append("prometheus")
     if local_ip in alert_hosts:
-        install_list.append("alert_manager")
+        install_list.append("alertmanager")
     if local_ip in grafana_hosts:
         install_list.append("grafana")
     # 生成配置文件：
