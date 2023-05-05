@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  blackbox:
+    image: oliver006/redis_exporter:v1.50.0
+    container_name: redis_exporter
+    restart: always
+    privileged: true
+    network_mode: host
+    pid: host
+    command:  --redis.password="your redis password"

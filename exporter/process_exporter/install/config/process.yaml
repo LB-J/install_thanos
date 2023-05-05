@@ -1,0 +1,24 @@
+check_processes:
+  - mysqld
+  - DataNode
+  - ResourceManager
+  - NameNode
+  - JournalNode
+  - HiveMetaStore
+  - HiveServer2
+  - EmbeddedServer
+  - HMaster
+  - QuorumPeerMain
+  - DFSZKFailoverController
+  - NodeManager
+  - HRegionServer
+  - Elasticsearch
+  - Logstash
+check_port:
+  - 3306
+# 后台运行模式下，对外暴露的http 端口
+http_server_port: 0.0.0.0:8005
+ # 是否后台运行
+Daemon: False
+# 非后台模式下，输出指标到目标文件
+OutputFile: /var/opt/node_exporter/custom_script/process.prom

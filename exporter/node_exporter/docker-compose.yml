@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  blackbox:
+    image: bitnami/node-exporter:1.5.0
+    container_name: node_exporter
+    restart: always
+    privileged: true
+    volumes:
+      - '/:/host:ro,rslave'
+      - '/var/opt/node_exporter/custom_script:/custom_script'
+    network_mode: host
+    pid: host
+    command:  --path.rootfs=/host  --collector.textfile.directory=/custom_script  --log.level=warn  --collector.mountstats  --collector.processes  --collector.tcpstat
